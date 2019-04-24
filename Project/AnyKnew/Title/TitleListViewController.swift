@@ -17,6 +17,13 @@ class TitleListViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let localData = UserDefaults.standard.object(forKey: "titleModel")
+        
+        if localData != nil {
+            self.titleModel = try! JSONDecoder().decode(TitleModel.self, from: localData as! Data)
+        }
+
         self.requestData()
     }
     
@@ -31,9 +38,9 @@ class TitleListViewController: UIViewController {
 
             case .success( _) :
 
-                let jsonDecoder = JSONDecoder()
-                self.titleModel = try! jsonDecoder.decode(TitleModel.self, from: response.data!)
+                self.titleModel = try! JSONDecoder().decode(TitleModel.self, from: response.data!)
                 if self.titleModel.status != 0 { return }
+                UserDefaults.standard.set(response.data!, forKey: "titleModel")
                 self.titleTableView.reloadData()
                 
                 break

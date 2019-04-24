@@ -24,6 +24,12 @@ class HomeViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        let localData = UserDefaults.standard.object(forKey: "homeModel")
+
+        if localData != nil {
+            self.homeModel = try! JSONDecoder().decode(HomeModel.self, from: localData as! Data)
+        }
         self.requestData()
     }
 
@@ -39,6 +45,7 @@ class HomeViewController: UIViewController {
                 
                 self.homeModel = try! JSONDecoder().decode(HomeModel.self, from: response.data!)
                 if self.homeModel.status != 0 { return }
+                UserDefaults.standard.set(response.data!, forKey: "homeModel")
                 self.homeTableView.reloadData()
                 
                 break
