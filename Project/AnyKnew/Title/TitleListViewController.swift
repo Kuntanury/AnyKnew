@@ -13,18 +13,31 @@ class TitleListViewController: UIViewController {
     
     var keySite: String = ""
     var titleModel: TitleModel = TitleModel()
+    var segmentedControl: UISegmentedControl = UISegmentedControl()
+    var selectedSegmentIndex = 0
     @IBOutlet weak var titleTableView: UITableView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
         let localData = UserDefaults.standard.object(forKey: "titleModel")
         
         if localData != nil {
             self.titleModel = try! JSONDecoder().decode(TitleModel.self, from: localData as! Data)
+            self.configSegmentedColtrol()
+            self.titleTableView.reloadData()
         }
-
+        
         self.requestData()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        segmentedControl.removeFromSuperview();
     }
     
     func requestData() -> Void {
@@ -40,6 +53,7 @@ class TitleListViewController: UIViewController {
 
                 self.titleModel = try! JSONDecoder().decode(TitleModel.self, from: response.data!)
                 if self.titleModel.status != 0 { return }
+                self.configSegmentedColtrol()
                 UserDefaults.standard.set(response.data!, forKey: "titleModel")
                 self.titleTableView.reloadData()
                 
@@ -49,43 +63,53 @@ class TitleListViewController: UIViewController {
             }
         }
     }
+    
+    func configSegmentedColtrol() -> Void {
+        self.navigationController?.navigationBar.addSubview(segmentedControl)
+        segmentedControl.snp.makeConstraints { (make) in
+            make.right.equalToSuperview().offset(-10)
+            make.centerY.equalToSuperview()
+            make.height.equalToSuperview().dividedBy(1.5)
+            make.width.equalToSuperview().dividedBy(3)
+        }
+        
+        segmentedControl.removeAllSegments()
+        if titleModel.data?.site?.subs?.count ?? 1 > 1 {
+            for (index,element) in (titleModel.data?.site?.subs?.enumerated())! {
+                segmentedControl.insertSegment(withTitle: element.attrs?.cn , at: index, animated: true)
+            }
+        }
+        segmentedControl.selectedSegmentIndex = selectedSegmentIndex;
+        segmentedControl.addTarget(self, action: #selector(segmentedControlValueChanged), for: UIControl.Event.valueChanged)
+    }
+    
+    func segmentedColtrolLoadData() -> Void {
+       
+    }
+
+    @objc func segmentedControlValueChanged(_ sender: UISegmentedControl) {
+        titleTableView.scrollToRow(at: IndexPath.init(row: 0, section: 0), at: UITableView.ScrollPosition.top, animated: true)
+        selectedSegmentIndex = sender.selectedSegmentIndex
+        titleTableView.reloadData()
+    }
+    
 }
 
 extension TitleListViewController: UITableViewDelegate, UITableViewDataSource {
 
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return titleModel.data?.site?.subs?.count ?? 0
-    }
-
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return titleModel.data?.site?.subs?[section].items?.count ?? 0
+        return titleModel.data?.site?.subs?[selectedSegmentIndex].items?.count ?? 0
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "TitleCell") as! TitleListViewControllerCell
-        cell.layoutSubviewsWithModel(model: (titleModel.data?.site?.subs?[indexPath.section].items?[indexPath.row] ?? nil)!)
+        cell.layoutSubviewsWithModel(model: (titleModel.data?.site?.subs?[selectedSegmentIndex].items?[indexPath.row] ?? nil)!)
         return cell
     }
-
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let secView = UIView.init(frame: CGRect.init(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 30))
-        let label = UILabel.init(frame: CGRect.init(x: 20, y: 0, width: UIScreen.main.bounds.width - 40, height: 30))
-        label.text = titleModel.data?.site?.subs?[section].attrs?.cn
-        secView.addSubview(label)
-        return secView
-    }
-
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 30
-    }
-
-    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        return 0
-    }
-
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let vc: SourceWebViewController = SourceWebViewController.init()
-        vc.iid = String(titleModel.data?.site?.subs?[indexPath.section].items?[indexPath.row].iid ?? 0)
+        vc.iid = String(titleModel.data?.site?.subs?[selectedSegmentIndex].items?[indexPath.row].iid ?? 0)
         self.navigationController?.pushViewController(vc, animated: true)
     }
     
