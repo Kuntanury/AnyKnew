@@ -12,8 +12,10 @@ import SDWebImage
 class TitleListViewControllerCell: UITableViewCell {
     
     @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var extLabel: UILabel!
     
     func layoutSubviewsWithModel(model: TitleDataSiteSubsItemsModel) -> Void {
         titleLabel.text =  model.title
+        extLabel.text = model.ext
     }
 }
