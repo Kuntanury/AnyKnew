@@ -103,7 +103,7 @@ extension TitleListViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "TitleCell") as! TitleListViewControllerCell
-        cell.layoutSubviewsWithModel(model: (titleModel.data?.site?.subs?[selectedSegmentIndex].items?[indexPath.row] ?? nil)!)
+        cell.layoutSubviewsWithModel(model: (titleModel.data?.site?.subs?[selectedSegmentIndex].items?[indexPath.row] ?? nil)!, indexPath:indexPath)
         return cell
     }
     
