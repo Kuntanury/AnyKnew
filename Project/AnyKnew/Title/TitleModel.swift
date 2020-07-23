@@ -26,9 +26,9 @@ class TitleDataModel: Codable {
 }
 
 class TitleDataSiteModel: Codable {
-    let subs: Array<TitleDataSiteSubsModel>?
     let site: String?
     let attrs: TitleDataSiteAttrsModel?
+    let subs: Array<TitleDataSiteSubsModel>?
 }
 
 class TitleDataSiteSubsModel: Codable {
@@ -37,22 +37,24 @@ class TitleDataSiteSubsModel: Codable {
 }
 
 class TitleDataSiteSubsItemsModel: Codable {
-    let iid: Int
-    let ext: String?
-    let new_tag: Bool
-    let seq: Int
+    //Common
+    let iid: Int?
     let title: String?
+    let new_tag: Bool?
+    let add_date: TimeInterval?
+    //baidu
+    let more: String?
 }
 
 class TitleDataSiteSubsAttrsModel: Codable {
     let cn: String?
-    let display: Int
+    let display: Int?
 }
 
 class TitleDataSiteAttrsModel: Codable {
     let url: String?
     let logo: String?
     let cn: String?
-    let iter: Int
+    let iter: Int64?
     
 }

@@ -16,6 +16,6 @@ class TitleListViewControllerCell: UITableViewCell {
     
     func layoutSubviewsWithModel(model: TitleDataSiteSubsItemsModel, indexPath: IndexPath) -> Void {
         titleLabel.text = String(indexPath.row + 1) + ". " +  model.title!
-        extLabel.text = model.ext
+        extLabel.text = model.more
     }
 }

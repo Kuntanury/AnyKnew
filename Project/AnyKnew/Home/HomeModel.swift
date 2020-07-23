@@ -25,7 +25,7 @@ class HomeModel: Codable {
 class HomeDataModel: Codable {
     let iters: Dictionary<String, Int>?
     let cats: Array<HomeDataCatsModel>?
-    let alliter: String?
+    let alliter: Int64?
     let bespoke: Bool?
 }
 
